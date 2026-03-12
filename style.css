@@ -5,12 +5,18 @@
     -webkit-tap-highlight-color: transparent;
 }
 
+html, body {
+    width: 100%;
+    height: 100%;
+    overflow: auto;
+}
+
 body {
     font-family: 'Cinzel', 'Georgia', serif;
     background: linear-gradient(180deg, #000000 0%, #0a0a0a 50%, #1e3a8a 100%);
+    background-attachment: fixed;
     color: #fff;
-    overflow-x: hidden;
-    touch-action: pan-y;
+    touch-action: pan-x pan-y;
 }
 
 .header {
@@ -46,9 +52,11 @@ body {
     padding: 20px 10px 80px;
     min-height: 100vh;
     display: flex;
-    justify-content: center;
+    justify-content: flex-start;
     align-items: flex-end;
     position: relative;
+    width: 100%;
+    overflow-x: auto;
 }
 
 .tree-container {
@@ -58,7 +66,8 @@ body {
     gap: 40px;
     padding: 20px;
     position: relative;
-    width: 100%;
+    width: max-content;
+    margin: 0 auto;
 }
 
 .athlete {
@@ -75,7 +84,7 @@ body {
     display: flex;
     flex-direction: column;
     gap: 15px;
-    width: 100%;
+    width: max-content;
     position: relative;
     padding: 20px 10px;
     background: rgba(30, 58, 138, 0.05);
@@ -112,8 +121,8 @@ body {
     display: flex;
     gap: 15px;
     justify-content: center;
-    flex-wrap: wrap;
-    width: 100%;
+    flex-wrap: nowrap;
+    width: max-content;
 }
 
 .skill-category {
@@ -126,6 +135,7 @@ body {
     border-radius: 15px;
     border: 1px solid rgba(37, 99, 235, 0.3);
     min-width: 100px;
+    flex-shrink: 0;
 }
 
 .category-label {
