@@ -157,6 +157,23 @@ body {
     cursor: pointer;
 }
 
+.athlete-badge {
+    position: absolute;
+    bottom: -8px;
+    left: 50%;
+    transform: translateX(-50%);
+    background: rgba(0, 0, 0, 0.9);
+    color: #60a5fa;
+    font-size: 9px;
+    padding: 2px 6px;
+    border-radius: 8px;
+    border: 1px solid #2563eb;
+    white-space: nowrap;
+    font-weight: bold;
+    letter-spacing: 0.5px;
+    z-index: 10;
+}
+
 .skill-node {
     width: 60px;
     height: 60px;
@@ -282,6 +299,7 @@ body {
     line-height: 1.6;
     margin-bottom: 20px;
     color: #ccc;
+    white-space: pre-line;
 }
 
 #modalDeps {

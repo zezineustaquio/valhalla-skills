@@ -9,15 +9,18 @@ async function loadSkills() {
     
     skillsData = lines.slice(1).map((line, idx) => {
         const parts = line.split(',');
-        const [nivel, categoria, skill, preRequisitos] = parts;
+        const [nivel, categoria, skill, preRequisitos, flyer, base, lateral, back] = parts;
         return {
             id: idx,
             nivel: parseInt(nivel),
             categoria,
             name: skill,
-            deps: preRequisitos === 'Nenhum' ? [] : [preRequisitos],
+            deps: preRequisitos === 'Nenhum' ? [] : preRequisitos.split(';').map(d => d.trim()),
             cost: parseInt(nivel),
-            desc: parts.slice(4).join(', ')
+            flyer: parseInt(flyer) || 0,
+            base: parseInt(base) || 0,
+            lateral: parseInt(lateral) || 0,
+            back: parseInt(back) || 0
         };
     });
 }
@@ -99,6 +102,19 @@ function renderSkillTree() {
                 node.innerHTML = getSkillIcon(skill.categoria);
                 node.title = skill.name;
                 node.onclick = () => openModal(skill);
+                
+                // Badge de atletas necessários
+                if (skill.flyer || skill.base || skill.lateral || skill.back) {
+                    const badge = document.createElement('div');
+                    badge.className = 'athlete-badge';
+                    const athletes = [];
+                    if (skill.flyer) athletes.push(`${skill.flyer}F`);
+                    if (skill.base) athletes.push(`${skill.base}B`);
+                    if (skill.lateral) athletes.push(`${skill.lateral}L`);
+                    if (skill.back) athletes.push(`${skill.back}Bk`);
+                    badge.textContent = athletes.join(' ');
+                    nodeWrapper.appendChild(badge);
+                }
                 
                 nodeWrapper.appendChild(node);
                 skillsDiv.appendChild(nodeWrapper);
@@ -187,13 +203,74 @@ function getSkillState(skill) {
     return depsUnlocked ? 'available' : 'locked';
 }
 
+function drawConnections() {
+    const svg = document.createElementNS('http://www.w3.org/2000/svg', 'svg');
+    svg.style.position = 'absolute';
+    svg.style.top = '0';
+    svg.style.left = '0';
+    svg.style.width = '100%';
+    svg.style.height = '100%';
+    svg.style.pointerEvents = 'none';
+    svg.style.zIndex = '-1';
+    
+    const tree = document.getElementById('skillTree');
+    const treeRect = tree.getBoundingClientRect();
+    
+    skillsData.forEach(skill => {
+        if (skill.deps.length === 0 || !skill.deps[0]) return;
+        
+        skill.deps.forEach(depName => {
+            const depSkill = skillsData.find(s => s.name === depName);
+            if (!depSkill) return;
+            
+            const fromEl = document.getElementById(`skill-${depSkill.id}`);
+            const toEl = document.getElementById(`skill-${skill.id}`);
+            
+            if (!fromEl || !toEl) return;
+            
+            const fromRect = fromEl.getBoundingClientRect();
+            const toRect = toEl.getBoundingClientRect();
+            
+            const x1 = fromRect.left + fromRect.width / 2 - treeRect.left;
+            const y1 = fromRect.top + fromRect.height / 2 - treeRect.top;
+            const x2 = toRect.left + toRect.width / 2 - treeRect.left;
+            const y2 = toRect.top + toRect.height / 2 - treeRect.top;
+            
+            const line = document.createElementNS('http://www.w3.org/2000/svg', 'line');
+            line.setAttribute('x1', x1);
+            line.setAttribute('y1', y1);
+            line.setAttribute('x2', x2);
+            line.setAttribute('y2', y2);
+            
+            const isActive = unlockedSkills.has(depSkill.id) && unlockedSkills.has(skill.id);
+            line.setAttribute('stroke', isActive ? '#2563eb' : '#333');
+            line.setAttribute('stroke-width', isActive ? '3' : '2');
+            line.setAttribute('opacity', isActive ? '0.8' : '0.3');
+            
+            svg.appendChild(line);
+        });
+    });
+    
+    tree.insertBefore(svg, tree.firstChild);
+}
+
 function openModal(skill) {
     const modal = document.getElementById('modal');
     const state = getSkillState(skill);
     
     document.getElementById('modalIcon').innerHTML = getSkillIcon(skill.categoria);
     document.getElementById('modalTitle').textContent = skill.name;
-    document.getElementById('modalDesc').textContent = `${skill.categoria} - Nível ${skill.nivel}`;
+    
+    let desc = `${skill.categoria} - Nível ${skill.nivel}`;
+    if (skill.flyer || skill.base || skill.lateral || skill.back) {
+        const athletes = [];
+        if (skill.flyer) athletes.push(`${skill.flyer} Flyer`);
+        if (skill.base) athletes.push(`${skill.base} Base`);
+        if (skill.lateral) athletes.push(`${skill.lateral} Lateral`);
+        if (skill.back) athletes.push(`${skill.back} Back`);
+        desc += `\n\nAtletas necessários: ${athletes.join(', ')}`;
+    }
+    document.getElementById('modalDesc').textContent = desc;
     
     const depsDiv = document.getElementById('modalDeps');
     if (skill.deps.length > 0 && skill.deps[0]) {
