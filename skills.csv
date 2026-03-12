@@ -1,0 +1,77 @@
+Nivel,Categoria,Skill,PreRequisitos,Flyer,Base,Lateral,Back
+0,Fundamentos,Core básico,Nenhum,0,0,0,0
+0,Fundamentos,Flexibilidade,Nenhum,0,0,0,0
+0,Fundamentos,Coordenação,Nenhum,0,0,0,0
+0,Fundamentos,Grip básico,Nenhum,0,0,0,0
+1,Tumbling,Forward Roll,Nenhum,0,0,0,0
+1,Tumbling,Backward Roll,Forward Roll,0,0,0,0
+1,Tumbling,Handstand,Core básico,0,0,0,0
+1,Tumbling,Cartwheel,Handstand,0,0,0,0
+1,Tumbling,Bridge,Flexibilidade,0,0,0,0
+1,Tumbling,Bridge Kickover,Bridge,0,0,0,0
+1,Jumps,Tuck Jump,Coordenação,0,0,0,0
+1,Jumps,Pike Jump,Tuck Jump,0,0,0,0
+1,Jumps,Toe Touch,Pike Jump,0,0,0,0
+1,Stunts,Thigh Stand,Grip básico,1,1,1,0
+1,Partner,Shoulder Sit,Thigh Stand,1,1,1,0
+1,Partner,Shoulder Stand,Shoulder Sit,1,1,1,1
+1,Stunts,Prep,Thigh Stand,1,2,0,1
+1,Pyramid,Two Prep Pyramid,Prep,2,4,0,2
+2,Tumbling,Round Off,Cartwheel,0,0,0,0
+2,Tumbling,Back Walkover,Bridge Kickover,0,0,0,0
+2,Tumbling,Front Walkover,Bridge Kickover,0,0,0,0
+2,Jumps,Toe Touch técnico,Toe Touch,0,0,0,0
+2,Jumps,Jump Combo,Toe Touch,0,0,0,0
+2,Stunts,Extension,Prep,1,2,0,1
+2,Stunts,Half Twist,Extension,1,2,0,1
+2,Partner,Liberty Prep,Extension,1,2,0,1
+2,Partner,Tick Tock,Liberty Prep,1,2,0,1
+2,Pyramid,Extension Pyramid,Two Prep Pyramid,2,4,0,2
+3,Tumbling,Back Handspring,Round Off,0,0,0,0
+3,Tumbling,Standing Back Handspring,Back Walkover,0,0,0,0
+3,Tumbling,Round Off Back Handspring,Back Handspring,0,0,0,0
+3,Tumbling,Front Handspring,Front Walkover,0,0,0,0
+3,Stunts,Liberty,Liberty Prep,1,2,0,1
+3,Stunts,Liberty Extension,Liberty Prep,1,2,0,1
+3,Stunts,Heel Stretch,Liberty,1,2,0,1
+3,Stunts,Arabesque,Liberty,1,2,0,1
+3,Partner,Full Up,Extension,1,2,0,1
+3,Partner,Rewind básico,Liberty,1,2,0,1
+3,Pyramid,Liberty Pyramid,Liberty,2,4,0,2
+4,Tumbling,Standing Tuck,Back Handspring,0,0,0,0
+4,Tumbling,Round Off BHS Tuck,Round Off Back Handspring,0,0,0,0
+4,Tumbling,Front Tuck,Front Handspring,0,0,0,0
+4,Tumbling,Layout,Standing Tuck,0,0,0,0
+4,Stunts,Switch Up,Liberty,1,2,0,1
+4,Stunts,Double Down,Liberty,1,2,0,1
+4,Partner,Rewind,Rewind básico,1,2,0,1
+4,Partner,Hand to Hand,Shoulder Stand,1,1,1,1
+4,Pyramid,Release Pyramid,Liberty Pyramid,3,6,0,3
+5,Tumbling,Standing Layout,Standing Tuck,0,0,0,0
+5,Tumbling,Round Off BHS Layout,Round Off BHS Tuck,0,0,0,0
+5,Tumbling,Full Twist,Layout,0,0,0,0
+5,Tumbling,Front Layout,Front Tuck,0,0,0,0
+5,Partner,Basic Toss Load,Extension,1,2,0,1
+5,Stunts,Full Up Liberty,Full Up,1,2,0,1
+5,Stunts,Double Full Down,Double Down,1,2,0,1
+5,Partner,Rewind to Liberty,Rewind,1,2,0,1
+5,Partner,Basket Toss,Basic Toss Load,1,2,0,1
+5,Partner,Basket Toss Toe Touch,Basket Toss,1,2,0,1
+5,Pyramid,Switch Up Pyramid,Release Pyramid,3,6,0,3
+6,Tumbling,Standing Full,Standing Layout,0,0,0,0
+6,Tumbling,Round Off BHS Full,Round Off BHS Layout,0,0,0,0
+6,Tumbling,Whip Layout,Layout,0,0,0,0
+6,Tumbling,Arabian Tuck,Front Tuck,0,0,0,0
+6,Stunts,Rewind to Full,Rewind to Liberty,1,2,0,1
+6,Stunts,Full Up Stretch,Full Up Liberty,1,2,0,1
+6,Partner,Basket Toss Layout,Basket Toss Toe Touch,1,2,0,1
+6,Partner,Basket Toss Full,Basket Toss Layout,1,2,0,1
+6,Pyramid,Release Flip Pyramid,Switch Up Pyramid,3,6,0,3
+7,Tumbling,Double Full,Standing Full,0,0,0,0
+7,Tumbling,Full Through to Double,Round Off BHS Full,0,0,0,0
+7,Tumbling,Whip Full Pass,Whip Layout,0,0,0,0
+7,Stunts,Double Full Down,Rewind to Full,1,2,0,1
+7,Stunts,Full Up Double Twist,Full Up Stretch,1,2,0,1
+7,Partner,Basket Toss Double Full,Basket Toss Full,1,2,0,1
+7,Partner,Release Hand to Hand,Basket Toss Layout,1,2,0,1
+7,Pyramid,Advanced Release Pyramid,Release Flip Pyramid,4,8,0,4
