@@ -131,7 +131,7 @@ function renderSkillTree() {
     tree.appendChild(container);
     
     // Desenhar conexões após renderizar
-    setTimeout(() => drawConnections(), 100);
+    setTimeout(() => drawConnections(), 200);
 }
 
 function drawConnections() {
@@ -204,6 +204,14 @@ function getSkillState(skill) {
 }
 
 function drawConnections() {
+    // Remove SVG anterior se existir
+    const oldSvg = document.querySelector('#skillTree svg');
+    if (oldSvg) oldSvg.remove();
+    
+    const tree = document.getElementById('skillTree');
+    const container = tree.querySelector('.tree-container');
+    if (!container) return;
+    
     const svg = document.createElementNS('http://www.w3.org/2000/svg', 'svg');
     svg.style.position = 'absolute';
     svg.style.top = '0';
@@ -211,10 +219,10 @@ function drawConnections() {
     svg.style.width = '100%';
     svg.style.height = '100%';
     svg.style.pointerEvents = 'none';
-    svg.style.zIndex = '-1';
+    svg.style.zIndex = '0';
+    svg.style.overflow = 'visible';
     
-    const tree = document.getElementById('skillTree');
-    const treeRect = tree.getBoundingClientRect();
+    const containerRect = container.getBoundingClientRect();
     
     skillsData.forEach(skill => {
         if (skill.deps.length === 0 || !skill.deps[0]) return;
@@ -231,10 +239,10 @@ function drawConnections() {
             const fromRect = fromEl.getBoundingClientRect();
             const toRect = toEl.getBoundingClientRect();
             
-            const x1 = fromRect.left + fromRect.width / 2 - treeRect.left;
-            const y1 = fromRect.top + fromRect.height / 2 - treeRect.top;
-            const x2 = toRect.left + toRect.width / 2 - treeRect.left;
-            const y2 = toRect.top + toRect.height / 2 - treeRect.top;
+            const x1 = fromRect.left + fromRect.width / 2 - containerRect.left;
+            const y1 = fromRect.top + fromRect.height / 2 - containerRect.top;
+            const x2 = toRect.left + toRect.width / 2 - containerRect.left;
+            const y2 = toRect.top + toRect.height / 2 - containerRect.top;
             
             const line = document.createElementNS('http://www.w3.org/2000/svg', 'line');
             line.setAttribute('x1', x1);
@@ -251,7 +259,7 @@ function drawConnections() {
         });
     });
     
-    tree.insertBefore(svg, tree.firstChild);
+    container.insertBefore(svg, container.firstChild);
 }
 
 function openModal(skill) {
