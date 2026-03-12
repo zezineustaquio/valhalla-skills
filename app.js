@@ -30,7 +30,17 @@ function init() {
         renderSkillTree();
         updatePoints();
         setupModal();
+        scrollToAthlete();
     });
+}
+
+function scrollToAthlete() {
+    setTimeout(() => {
+        const athlete = document.querySelector('.athlete');
+        if (athlete) {
+            athlete.scrollIntoView({ behavior: 'smooth', block: 'center', inline: 'center' });
+        }
+    }, 300);
 }
 
 function renderSkillTree() {
