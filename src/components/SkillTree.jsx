@@ -112,12 +112,16 @@ export default function SkillTree({ user }) {
     }
   }, [skills, skillProgress]);
 
-  const scrollToAthlete = () => {
-    const athlete = document.querySelector('.athlete');
-    if (athlete) {
-      athlete.scrollIntoView({ behavior: 'smooth', block: 'center', inline: 'center' });
+  useEffect(() => {
+    if (selectedAthlete) {
+      setTimeout(() => {
+        const athlete = document.querySelector('.athlete');
+        if (athlete) {
+          athlete.scrollIntoView({ behavior: 'smooth', block: 'center', inline: 'center' });
+        }
+      }, 300);
     }
-  };
+  }, [selectedAthlete]);
 
   const drawConnections = () => {
     const svg = document.getElementById('connections-svg');
