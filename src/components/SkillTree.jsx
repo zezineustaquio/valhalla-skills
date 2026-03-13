@@ -106,7 +106,6 @@ export default function SkillTree({ user }) {
     if (skills.length > 0) {
       setTimeout(() => {
         drawConnections();
-        scrollToAthlete();
       }, 300);
       window.addEventListener('resize', drawConnections);
       return () => window.removeEventListener('resize', drawConnections);
@@ -165,6 +164,58 @@ export default function SkillTree({ user }) {
         svg.appendChild(line);
       });
     });
+  };
+
+  const setSkillLevel = async (skill, targetLevel) => {
+    if (!user?.isAdmin) {
+      alert('Apenas administradores podem editar o progresso');
+      return;
+    }
+    
+    if (!selectedAthlete) {
+      alert('Selecione um atleta primeiro');
+      return;
+    }
+    
+    const currentLevel = getRuneLevel(skill.id);
+    
+    // Se está tentando bloquear (targetLevel = 0), verificar dependências
+    if (targetLevel === 0 && currentLevel > 0) {
+      const dependentSkills = skills.filter(s => {
+        const deps = s.prereq ? s.prereq.split(';').map(d => d.trim()) : [];
+        return deps.includes(skill.name) && getRuneLevel(s.id) > 0;
+      });
+      
+      if (dependentSkills.length > 0) {
+        alert(`Não é possível bloquear esta skill. As seguintes skills dependem dela: ${dependentSkills.map(s => s.name).join(', ')}`);
+        return;
+      }
+    }
+    
+    const newProgress = new Map(skillProgress);
+    if (targetLevel === 0) {
+      newProgress.delete(skill.id);
+    } else {
+      newProgress.set(skill.id, targetLevel);
+    }
+    setSkillProgress(newProgress);
+    
+    try {
+      await fetch(`${API_URL}/api/progress`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        credentials: 'include',
+        body: JSON.stringify({ 
+          athlete_id: selectedAthlete.id, 
+          skill_id: skill.id, 
+          rune_level: targetLevel
+        })
+      });
+    } catch (error) {
+      console.error('Erro ao salvar progresso:', error);
+    }
+    
+    setSelectedSkill(null);
   };
 
   const unlockSkill = async (skill) => {
@@ -423,53 +474,50 @@ export default function SkillTree({ user }) {
             {(() => {
               const runeLevel = getRuneLevel(selectedSkill.id);
               const state = getSkillState(selectedSkill);
-              const runeNames = ['', '🥉 Bronze', '🥈 Prata', '🥇 Ouro'];
               
               return (
                 <>
-                  {runeLevel > 0 && (
-                    <div style={{ textAlign: 'center', marginBottom: '15px', fontSize: '18px', fontWeight: 'bold', color: getRuneColor(runeLevel) }}>
-                      {runeNames[runeLevel]}
+                  {user?.isAdmin && state !== 'locked' && (
+                    <div style={{ display: 'flex', gap: '10px', marginBottom: '15px' }}>
+                      {[0, 1, 2, 3].map(level => {
+                        const isActive = runeLevel === level;
+                        const labels = ['Bloqueada', '🥉 Bronze', '🥈 Prata', '🥇 Ouro'];
+                        const colors = ['#dc2626', '#cd7f32', '#c0c0c0', '#ffd700'];
+                        
+                        return (
+                          <button
+                            key={level}
+                            onClick={() => setSkillLevel(selectedSkill, level)}
+                            style={{
+                              flex: 1,
+                              padding: '12px',
+                              fontSize: '14px',
+                              fontWeight: 'bold',
+                              border: `3px solid ${isActive ? colors[level] : '#2563eb'}`,
+                              borderRadius: '10px',
+                              cursor: 'pointer',
+                              background: isActive 
+                                ? `linear-gradient(135deg, ${colors[level]}40 0%, ${colors[level]}20 100%)`
+                                : 'linear-gradient(135deg, #1e3a8a 0%, #0a0a0a 100%)',
+                              color: isActive ? colors[level] : '#60a5fa',
+                              boxShadow: isActive ? `0 0 20px ${colors[level]}80` : 'none',
+                              transition: 'all 0.3s'
+                            }}
+                          >
+                            {labels[level]}
+                          </button>
+                        );
+                      })}
                     </div>
                   )}
-                  {user?.isAdmin && (
-                    <div style={{ display: 'flex', gap: '10px' }}>
-                      {runeLevel > 0 && (
-                        <button
-                          onClick={() => downgradeSkill(selectedSkill)}
-                          style={{ 
-                            flex: 1,
-                            padding: '15px', 
-                            fontSize: '16px', 
-                            fontWeight: 'bold', 
-                            border: '2px solid #dc2626', 
-                            borderRadius: '10px', 
-                            cursor: 'pointer', 
-                            background: 'linear-gradient(135deg, #7f1d1d 0%, #991b1b 100%)', 
-                            color: '#fff'
-                          }}
-                        >
-                          ⬇ {runeLevel === 1 ? 'Bloquear' : 'Rebaixar'}
-                        </button>
-                      )}
-                      <button
-                        onClick={() => unlockSkill(selectedSkill)}
-                        disabled={state === 'locked' || runeLevel >= 3}
-                        style={{ 
-                          flex: 1,
-                          padding: '15px', 
-                          fontSize: '16px', 
-                          fontWeight: 'bold', 
-                          border: '2px solid #2563eb', 
-                          borderRadius: '10px', 
-                          cursor: state !== 'locked' && runeLevel < 3 ? 'pointer' : 'not-allowed', 
-                          background: runeLevel >= 3 ? 'linear-gradient(135deg, #1a1a1a 0%, #0a0a0a 100%)' : state === 'available' || state === 'unlocked' ? 'linear-gradient(135deg, #1e3a8a 0%, #2563eb 100%)' : 'linear-gradient(135deg, #1a1a1a 0%, #0a0a0a 100%)', 
-                          color: '#fff', 
-                          opacity: state !== 'locked' && runeLevel < 3 ? 1 : 0.5 
-                        }}
-                      >
-                        {runeLevel >= 3 ? '✓ Máximo' : state === 'locked' ? 'Bloqueada' : runeLevel === 0 ? '🥉 Bronze' : runeLevel === 1 ? '🥈 Prata' : '🥇 Ouro'}
-                      </button>
+                  {!user?.isAdmin && runeLevel > 0 && (
+                    <div style={{ textAlign: 'center', marginBottom: '15px', fontSize: '18px', fontWeight: 'bold', color: getRuneColor(runeLevel) }}>
+                      {['', '🥉 Bronze', '🥈 Prata', '🥇 Ouro'][runeLevel]}
+                    </div>
+                  )}
+                  {state === 'locked' && (
+                    <div style={{ textAlign: 'center', padding: '15px', background: 'rgba(220,38,38,0.2)', border: '2px solid #dc2626', borderRadius: '10px', color: '#fca5a5', fontWeight: 'bold' }}>
+                      🔒 Skill bloqueada - Complete os pré-requisitos primeiro
                     </div>
                   )}
                 </>
