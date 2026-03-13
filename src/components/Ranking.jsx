@@ -121,30 +121,34 @@ export default function Ranking({ user }) {
                 }} 
               />
               
-              <div style={{ flex: 1 }}>
+              <div style={{ flex: 1, minWidth: 0 }}>
                 <h3 style={{ 
                   color: index < 3 ? '#ffd700' : '#60a5fa', 
                   fontSize: '20px', 
                   margin: '0 0 5px 0',
-                  textShadow: index < 3 ? '0 0 10px rgba(255,215,0,0.5)' : 'none'
+                  textShadow: index < 3 ? '0 0 10px rgba(255,215,0,0.5)' : 'none',
+                  overflow: 'hidden',
+                  textOverflow: 'ellipsis',
+                  whiteSpace: 'nowrap'
                 }}>
                   {athlete.name}
                 </h3>
                 <p style={{ color: '#93c5fd', fontSize: '14px', margin: 0 }}>
-                  {athlete.skillCount} skills desbloqueadas
+                  {athlete.skillCount} skills
                 </p>
               </div>
               
-              <div style={{ textAlign: 'right' }}>
+              <div style={{ textAlign: 'right', flexShrink: 0 }}>
                 <div style={{ 
                   fontSize: '28px', 
                   fontWeight: 'bold', 
                   color: index < 3 ? '#ffd700' : '#60a5fa',
-                  textShadow: index < 3 ? '0 0 10px rgba(255,215,0,0.5)' : 'none'
+                  textShadow: index < 3 ? '0 0 10px rgba(255,215,0,0.5)' : 'none',
+                  whiteSpace: 'nowrap'
                 }}>
                   {athlete.totalRunes}
                 </div>
-                <div style={{ fontSize: '12px', color: '#93c5fd' }}>runas</div>
+                <div style={{ fontSize: '12px', color: '#93c5fd', whiteSpace: 'nowrap' }}>runas</div>
               </div>
             </div>
           ))}
