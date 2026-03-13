@@ -8,6 +8,7 @@ export default function Admin() {
   const [editingAthlete, setEditingAthlete] = useState(null);
   const [showPrereqModal, setShowPrereqModal] = useState(false);
   const [selectedPrereqs, setSelectedPrereqs] = useState([]);
+  const [loading, setLoading] = useState(false);
 
   useEffect(() => {
     loadSkills();
@@ -26,6 +27,7 @@ export default function Admin() {
 
   const saveSkill = async (e) => {
     e.preventDefault();
+    setLoading(true);
     const formData = new FormData(e.target);
     const data = Object.fromEntries(formData);
     data.prereq = selectedPrereqs.join('; ');
@@ -57,6 +59,8 @@ export default function Admin() {
       }
     } catch (error) {
       showToast('✗ Erro ao salvar skill', 'error');
+    } finally {
+      setLoading(false);
     }
   };
 
@@ -105,6 +109,7 @@ export default function Admin() {
 
   const saveAthlete = async (e) => {
     e.preventDefault();
+    setLoading(true);
     const formData = new FormData(e.target);
     const data = { 
       name: formData.get('name'), 
@@ -148,6 +153,8 @@ export default function Admin() {
       loadAthletes();
     } catch (error) {
       showToast('✗ Erro ao salvar atleta', 'error');
+    } finally {
+      setLoading(false);
     }
   };
 
@@ -256,8 +263,8 @@ export default function Admin() {
                     </div>
                   </div>
                   <div style={{ display: 'flex', gap: '15px', marginTop: '30px' }}>
-                    <button type="submit" style={{ flex: 1, padding: '15px', background: 'linear-gradient(135deg, #1e3a8a 0%, #2563eb 100%)', border: '2px solid #2563eb', color: '#fff', cursor: 'pointer', borderRadius: '10px', fontSize: '16px', fontWeight: 'bold' }}>Salvar</button>
-                    <button type="button" onClick={() => { setEditingSkill(null); setSelectedPrereqs([]); }} style={{ flex: 1, padding: '15px', background: 'linear-gradient(135deg, #374151 0%, #6b7280 100%)', border: '2px solid #6b7280', color: '#fff', cursor: 'pointer', borderRadius: '10px', fontSize: '16px', fontWeight: 'bold' }}>Cancelar</button>
+                    <button type="submit" disabled={loading} style={{ flex: 1, padding: '15px', background: loading ? '#6b7280' : 'linear-gradient(135deg, #1e3a8a 0%, #2563eb 100%)', border: '2px solid #2563eb', color: '#fff', cursor: loading ? 'not-allowed' : 'pointer', borderRadius: '10px', fontSize: '16px', fontWeight: 'bold', opacity: loading ? 0.6 : 1 }}>{loading ? '⏳ Salvando...' : 'Salvar'}</button>
+                    <button type="button" onClick={() => { setEditingSkill(null); setSelectedPrereqs([]); }} disabled={loading} style={{ flex: 1, padding: '15px', background: 'linear-gradient(135deg, #374151 0%, #6b7280 100%)', border: '2px solid #6b7280', color: '#fff', cursor: loading ? 'not-allowed' : 'pointer', borderRadius: '10px', fontSize: '16px', fontWeight: 'bold', opacity: loading ? 0.6 : 1 }}>Cancelar</button>
                   </div>
                 </form>
               </div>
@@ -343,8 +350,8 @@ export default function Admin() {
                     </div>
                   </div>
                   <div style={{ display: 'flex', gap: '15px', marginTop: '30px' }}>
-                    <button type="submit" style={{ flex: 1, padding: '15px', background: 'linear-gradient(135deg, #1e3a8a 0%, #2563eb 100%)', border: '2px solid #2563eb', color: '#fff', cursor: 'pointer', borderRadius: '10px', fontSize: '16px', fontWeight: 'bold' }}>Salvar</button>
-                    <button type="button" onClick={() => setEditingAthlete(null)} style={{ flex: 1, padding: '15px', background: 'linear-gradient(135deg, #374151 0%, #6b7280 100%)', border: '2px solid #6b7280', color: '#fff', cursor: 'pointer', borderRadius: '10px', fontSize: '16px', fontWeight: 'bold' }}>Cancelar</button>
+                    <button type="submit" disabled={loading} style={{ flex: 1, padding: '15px', background: loading ? '#6b7280' : 'linear-gradient(135deg, #1e3a8a 0%, #2563eb 100%)', border: '2px solid #2563eb', color: '#fff', cursor: loading ? 'not-allowed' : 'pointer', borderRadius: '10px', fontSize: '16px', fontWeight: 'bold', opacity: loading ? 0.6 : 1 }}>{loading ? '⏳ Salvando...' : 'Salvar'}</button>
+                    <button type="button" onClick={() => setEditingAthlete(null)} disabled={loading} style={{ flex: 1, padding: '15px', background: 'linear-gradient(135deg, #374151 0%, #6b7280 100%)', border: '2px solid #6b7280', color: '#fff', cursor: loading ? 'not-allowed' : 'pointer', borderRadius: '10px', fontSize: '16px', fontWeight: 'bold', opacity: loading ? 0.6 : 1 }}>Cancelar</button>
                   </div>
                 </form>
               </div>
