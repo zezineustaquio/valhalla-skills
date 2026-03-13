@@ -19,7 +19,12 @@ export default function SkillTree({ user }) {
       fetch(`${API_URL}/api/athletes`, { credentials: 'include' })
     ]);
     
-    setSkills(await skillsRes.json());
+    const skillsData = await skillsRes.json();
+    const normalizedSkills = skillsData.map(skill => ({
+      ...skill,
+      nivel: Number(skill.nivel)
+    }));
+    setSkills(normalizedSkills);
     const athletesData = await athletesRes.json();
     setAthletes(athletesData);
     
@@ -65,9 +70,10 @@ export default function SkillTree({ user }) {
   const groupByLevel = () => {
     const levels = {};
     skills.forEach(skill => {
-      if (!levels[skill.nivel]) levels[skill.nivel] = {};
-      if (!levels[skill.nivel][skill.categoria]) levels[skill.nivel][skill.categoria] = [];
-      levels[skill.nivel][skill.categoria].push(skill);
+      const nivel = skill.nivel;
+      if (!levels[nivel]) levels[nivel] = {};
+      if (!levels[nivel][skill.categoria]) levels[nivel][skill.categoria] = [];
+      levels[nivel][skill.categoria].push(skill);
     });
     return levels;
   };
@@ -275,44 +281,39 @@ export default function SkillTree({ user }) {
   return (
     <div style={{ background: 'linear-gradient(180deg, #000 0%, #1e3a8a 100%)', minHeight: '100vh', color: '#fff', fontFamily: 'Cinzel, Georgia, serif', position: 'relative' }}>
       <style>{`
-        @keyframes float {
-          0%, 100% { transform: translateY(0px); }
+        @keyframes bounce {
+          0%, 100% { transform: translateY(0); }
           50% { transform: translateY(-10px); }
-        }
-        @keyframes pulse {
-          0%, 100% { box-shadow: 0 0 20px rgba(96,165,250,0.5); }
-          50% { box-shadow: 0 0 30px rgba(96,165,250,0.8); }
         }
       `}</style>
 
-      {/* Botões flutuantes */}
-      <div style={{ position: 'fixed', top: '20px', right: '20px', zIndex: 1000, display: 'flex', flexDirection: 'column', gap: '15px', animation: 'float 3s ease-in-out infinite' }}>
+      {/* Botões de navegação */}
+      <div style={{ position: 'fixed', top: '20px', left: '50%', transform: 'translateX(-50%)', zIndex: 1000, display: 'flex', gap: '10px', background: 'rgba(0,0,0,0.8)', padding: '10px', borderRadius: '50px', border: '2px solid #2563eb', backdropFilter: 'blur(10px)' }}>
         {user ? (
           <>
-            <a href="/" style={{ padding: '12px 20px', background: 'rgba(30,58,138,0.9)', border: '2px solid #2563eb', color: '#60a5fa', textDecoration: 'none', borderRadius: '50px', fontSize: '14px', fontWeight: 'bold', textAlign: 'center', animation: 'pulse 2s ease-in-out infinite', backdropFilter: 'blur(10px)' }}>🏆 Ranking</a>
-            {user.isAdmin && <a href="/admin" style={{ padding: '12px 20px', background: 'rgba(30,58,138,0.9)', border: '2px solid #2563eb', color: '#60a5fa', textDecoration: 'none', borderRadius: '50px', fontSize: '14px', fontWeight: 'bold', textAlign: 'center', animation: 'pulse 2s ease-in-out infinite', backdropFilter: 'blur(10px)' }}>⚙️ Admin</a>}
+            <a href="/" title="Ranking" style={{ padding: '12px', background: 'rgba(30,58,138,0.9)', border: '2px solid #2563eb', color: '#60a5fa', textDecoration: 'none', borderRadius: '50%', fontSize: '20px', display: 'flex', alignItems: 'center', justifyContent: 'center', width: '48px', height: '48px' }}>🏆</a>
+            {user.isAdmin && <a href="/admin" title="Painel Admin" style={{ padding: '12px', background: 'rgba(30,58,138,0.9)', border: '2px solid #2563eb', color: '#60a5fa', textDecoration: 'none', borderRadius: '50%', fontSize: '20px', display: 'flex', alignItems: 'center', justifyContent: 'center', width: '48px', height: '48px' }}>⚙️</a>}
             <button onClick={() => {
               fetch(`${API_URL}/auth/logout`, { method: 'POST', credentials: 'include' })
                 .then(() => window.location.href = '/');
-            }} style={{ padding: '12px 20px', background: 'rgba(220,38,38,0.9)', border: '2px solid #dc2626', color: '#fca5a5', cursor: 'pointer', borderRadius: '50px', fontSize: '14px', fontWeight: 'bold', animation: 'pulse 2s ease-in-out infinite', backdropFilter: 'blur(10px)' }}>🚪 Sair</button>
+            }} title="Sair" style={{ padding: '12px', background: 'rgba(220,38,38,0.9)', border: '2px solid #dc2626', color: '#fca5a5', cursor: 'pointer', borderRadius: '50%', fontSize: '20px', display: 'flex', alignItems: 'center', justifyContent: 'center', width: '48px', height: '48px' }}>🚪</button>
           </>
         ) : (
           <>
-            <a href="/" style={{ padding: '12px 20px', background: 'rgba(30,58,138,0.9)', border: '2px solid #2563eb', color: '#60a5fa', textDecoration: 'none', borderRadius: '50px', fontSize: '14px', fontWeight: 'bold', textAlign: 'center', animation: 'pulse 2s ease-in-out infinite', backdropFilter: 'blur(10px)' }}>🏆 Ranking</a>
-            <a href={`${API_URL}/auth/google`} style={{ padding: '12px 20px', background: '#fff', color: '#1e3a8a', textDecoration: 'none', borderRadius: '50px', fontSize: '14px', fontWeight: 'bold', display: 'flex', alignItems: 'center', gap: '8px', animation: 'pulse 2s ease-in-out infinite', boxShadow: '0 0 20px rgba(255,255,255,0.5)' }}>
-              <svg width="18" height="18" viewBox="0 0 24 24">
+            <a href="/" title="Ranking" style={{ padding: '12px', background: 'rgba(30,58,138,0.9)', border: '2px solid #2563eb', color: '#60a5fa', textDecoration: 'none', borderRadius: '50%', fontSize: '20px', display: 'flex', alignItems: 'center', justifyContent: 'center', width: '48px', height: '48px' }}>🏆</a>
+            <a href={`${API_URL}/auth/google`} title="Entrar com Google" style={{ padding: '12px', background: '#fff', color: '#1e3a8a', textDecoration: 'none', borderRadius: '50%', fontSize: '20px', display: 'flex', alignItems: 'center', justifyContent: 'center', width: '48px', height: '48px', boxShadow: '0 0 20px rgba(255,255,255,0.5)' }}>
+              <svg width="24" height="24" viewBox="0 0 24 24">
                 <path fill="#4285F4" d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z"/>
                 <path fill="#34A853" d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z"/>
                 <path fill="#FBBC05" d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.07H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.93l2.85-2.22.81-.62z"/>
                 <path fill="#EA4335" d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z"/>
               </svg>
-              Entrar
             </a>
           </>
         )}
       </div>
 
-      <div style={{ padding: '20px 10px 80px', display: 'flex', justifyContent: 'flex-start', alignItems: 'flex-end', position: 'relative', overflowX: 'auto' }}>
+      <div style={{ padding: '100px 10px 80px', display: 'flex', justifyContent: 'flex-start', alignItems: 'flex-end', position: 'relative', overflowX: 'auto' }}>
         <div className="tree-container" style={{ display: 'flex', flexDirection: 'column-reverse', alignItems: 'center', gap: '40px', padding: '20px', position: 'relative', width: 'max-content', margin: '0 auto' }}>
           
           <svg id="connections-svg" style={{ position: 'absolute', top: 0, left: 0, width: '100%', height: '100%', pointerEvents: 'none', zIndex: 0, overflow: 'visible' }}></svg>
@@ -331,7 +332,9 @@ export default function SkillTree({ user }) {
             )}
           </div>
 
-          {Object.keys(levels).sort((a, b) => a - b).map(nivel => (
+          {Object.keys(levels).sort((a, b) => Number(a) - Number(b)).map(nivelStr => {
+            const nivel = Number(nivelStr);
+            return (
             <div key={nivel} style={{ display: 'flex', flexDirection: 'column', gap: '15px', width: 'max-content', padding: '20px 10px', background: 'rgba(30,58,138,0.05)', borderRadius: '20px', border: '2px solid rgba(37,99,235,0.3)' }}>
               <div style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', gap: '15px', padding: '10px', background: 'linear-gradient(90deg, transparent, rgba(37,99,235,0.2), transparent)', borderRadius: '10px' }}>
                 <span style={{ fontSize: '16px', fontWeight: 'bold', color: '#60a5fa', letterSpacing: '2px' }}>NÍVEL {nivel}</span>
@@ -341,11 +344,11 @@ export default function SkillTree({ user }) {
               </div>
 
               <div style={{ display: 'flex', gap: '15px', justifyContent: 'center', flexWrap: 'nowrap' }}>
-                {Object.keys(levels[nivel]).map(categoria => (
+                {Object.keys(levels[nivelStr]).map(categoria => (
                   <div key={categoria} style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '10px', padding: '10px', background: 'rgba(30,58,138,0.1)', borderRadius: '15px', border: '1px solid rgba(37,99,235,0.3)', minWidth: '100px', flexShrink: 0 }}>
                     <div style={{ fontSize: '11px', letterSpacing: '2px', fontWeight: 'bold', color: '#60a5fa', padding: '5px 10px', background: 'rgba(0,0,0,0.8)', borderRadius: '10px', border: '1px solid #2563eb' }}>{categoria}</div>
                     <div style={{ display: 'flex', gap: '10px', flexWrap: 'wrap', justifyContent: 'center' }}>
-                      {levels[nivel][categoria].map(skill => {
+                      {levels[nivelStr][categoria].map(skill => {
                         const state = getSkillState(skill);
                         const runeLevel = getRuneLevel(skill.id);
                         const runeColor = getRuneColor(runeLevel);
@@ -376,7 +379,12 @@ export default function SkillTree({ user }) {
                             </div>
                             {(skill.flyer > 0 || skill.base > 0 || skill.lateral > 0 || skill.back > 0) && (
                               <div style={{ position: 'absolute', bottom: '-8px', left: '50%', transform: 'translateX(-50%)', background: 'rgba(0,0,0,0.9)', color: '#60a5fa', fontSize: '9px', padding: '2px 6px', borderRadius: '8px', border: '1px solid #2563eb', whiteSpace: 'nowrap', fontWeight: 'bold' }}>
-                                {skill.flyer > 0 ? `${skill.flyer}F ` : ''}{skill.base > 0 ? `${skill.base}B ` : ''}{skill.lateral > 0 ? `${skill.lateral}L ` : ''}{skill.back > 0 ? `${skill.back}Bk` : ''}
+                                {[
+                                  skill.flyer > 0 && `${skill.flyer}F`,
+                                  skill.base > 0 && `${skill.base}B`,
+                                  skill.lateral > 0 && `${skill.lateral}L`,
+                                  skill.back > 0 && `${skill.back}Bk`
+                                ].filter(Boolean).join(' ')}
                               </div>
                             )}
                           </div>
@@ -387,7 +395,8 @@ export default function SkillTree({ user }) {
                 ))}
               </div>
             </div>
-          ))}
+            );
+          })}
         </div>
       </div>
 
@@ -399,8 +408,13 @@ export default function SkillTree({ user }) {
             <h2 style={{ textAlign: 'center', marginBottom: '15px', color: '#60a5fa', textTransform: 'uppercase', letterSpacing: '2px', textShadow: '0 0 10px rgba(96,165,250,0.7)' }}>{selectedSkill.name}</h2>
             <p style={{ textAlign: 'center', lineHeight: '1.6', marginBottom: '20px', color: '#ccc' }}>
               {selectedSkill.categoria} - Nível {selectedSkill.nivel}
-              {(selectedSkill.flyer || selectedSkill.base || selectedSkill.lateral || selectedSkill.back) && (
-                <><br /><br />Atletas: {selectedSkill.flyer ? `${selectedSkill.flyer} Flyer ` : ''}{selectedSkill.base ? `${selectedSkill.base} Base ` : ''}{selectedSkill.lateral ? `${selectedSkill.lateral} Lateral ` : ''}{selectedSkill.back ? `${selectedSkill.back} Back` : ''}</>
+              {(selectedSkill.flyer > 0 || selectedSkill.base > 0 || selectedSkill.lateral > 0 || selectedSkill.back > 0) && (
+                <><br /><br />Atletas: {[
+                  selectedSkill.flyer > 0 && `${selectedSkill.flyer} Flyer`,
+                  selectedSkill.base > 0 && `${selectedSkill.base} Base`,
+                  selectedSkill.lateral > 0 && `${selectedSkill.lateral} Lateral`,
+                  selectedSkill.back > 0 && `${selectedSkill.back} Back`
+                ].filter(Boolean).join(', ')}</>
               )}
             </p>
             <div style={{ margin: '15px 0', padding: '10px', background: 'rgba(0,0,0,0.3)', borderRadius: '10px', fontSize: '14px' }}>

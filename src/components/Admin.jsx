@@ -396,7 +396,7 @@ export default function Admin({ user }) {
                         <h3 style={{ color: '#60a5fa', fontSize: '14px', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>{athlete.name}</h3>
                         {athlete.is_admin === 1 && <span style={{ background: '#fbbf24', color: '#000', fontSize: '9px', padding: '2px 6px', borderRadius: '4px', fontWeight: 'bold' }}>ADMIN</span>}
                       </div>
-                      <p style={{ color: '#93c5fd', fontSize: '11px' }}>{athlete.gender === 'M' ? '♂' : '♀'} {athlete.email && `• ${athlete.email}`}</p>
+                      <p style={{ color: '#93c5fd', fontSize: '11px', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{athlete.gender === 'M' ? '♂' : '♀'} {athlete.email && `• ${athlete.email}`}</p>
                     </div>
                   </div>
                   <div style={{ display: 'flex', gap: '6px', justifyContent: 'flex-end' }}>
