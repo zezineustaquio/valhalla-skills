@@ -1,6 +1,6 @@
 # Valhalla Gamify - Árvore de Skills de Cheerleading
 
-Aplicação moderna de gamificação para progressão de habilidades de cheerleading com tema Viking.
+Aplicação moderna de gamificação para progressão de habilidades de cheerleading com tema Viking e autenticação Google OAuth.
 
 ## Stack
 
@@ -8,11 +8,13 @@ Aplicação moderna de gamificação para progressão de habilidades de cheerlea
 - **Backend**: Node.js + Express
 - **Banco de Dados**: SQLite (embutido)
 - **ORM**: Better-SQLite3
+- **Autenticação**: Google OAuth 2.0 + Passport.js
 
 ## Requisitos
 
 - **Node.js**: >= 18.0.0
 - **npm**: >= 8.0.0
+- **Conta Google Cloud** (para OAuth)
 
 Se você usa NVM:
 ```bash
@@ -25,6 +27,18 @@ nvm use
 npm install
 ```
 
+## Configuração
+
+1. **Configure o Google OAuth** seguindo o guia em `GOOGLE_OAUTH_SETUP.md`
+
+2. **Crie o arquivo `.env`** na raiz do projeto:
+```env
+GOOGLE_CLIENT_ID=seu_client_id_aqui
+GOOGLE_CLIENT_SECRET=seu_client_secret_aqui
+SESSION_SECRET=valhalla_secret_key_dev
+ADMIN_EMAIL=zezineustaquio@gmail.com
+```
+
 ## Executar
 
 ```bash
@@ -32,9 +46,27 @@ npm run dev
 ```
 
 Acesse:
+- **Login**: http://localhost:3000/login
 - **Árvore de Skills**: http://localhost:3000
-- **Admin**: http://localhost:3000/admin
+- **Admin**: http://localhost:3000/admin (apenas para admin)
 - **API**: http://localhost:3001/api
+
+## Autenticação e Permissões
+
+### Admin (zezineustaquio@gmail.com)
+- Acesso total ao painel admin
+- CRUD completo de skills e atletas
+- Visualizar todas as árvores de progresso
+
+### Atleta (email cadastrado)
+- Visualiza automaticamente sua própria árvore
+- Pode editar seu progresso
+- Sem acesso ao admin
+
+### Usuário Padrão
+- Apenas visualização das árvores
+- Pode selecionar qualquer atleta para visualizar
+- Sem permissão de edição
 
 ## Funcionalidades
 

@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react';
 
-export default function Admin() {
+export default function Admin({ user }) {
   const [skills, setSkills] = useState([]);
   const [athletes, setAthletes] = useState([]);
   const [view, setView] = useState('skills');
@@ -16,12 +16,12 @@ export default function Admin() {
   }, []);
 
   const loadSkills = async () => {
-    const res = await fetch('/api/skills');
+    const res = await fetch('http://localhost:3001/api/skills', { credentials: 'include' });
     setSkills(await res.json());
   };
 
   const loadAthletes = async () => {
-    const res = await fetch('/api/athletes');
+    const res = await fetch('http://localhost:3001/api/athletes', { credentials: 'include' });
     setAthletes(await res.json());
   };
 
@@ -35,15 +35,17 @@ export default function Admin() {
     try {
       let response;
       if (editingSkill.id) {
-        response = await fetch(`/api/skills/${editingSkill.id}`, {
+        response = await fetch(`http://localhost:3001/api/skills/${editingSkill.id}`, {
           method: 'PUT',
           headers: { 'Content-Type': 'application/json' },
+          credentials: 'include',
           body: JSON.stringify(data)
         });
       } else {
-        response = await fetch('/api/skills', {
+        response = await fetch('http://localhost:3001/api/skills', {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
+          credentials: 'include',
           body: JSON.stringify(data)
         });
       }
@@ -93,7 +95,10 @@ export default function Admin() {
   const deleteSkill = async (id) => {
     if (confirm('Excluir skill?')) {
       try {
-        const response = await fetch(`/api/skills/${id}`, { method: 'DELETE' });
+        const response = await fetch(`http://localhost:3001/api/skills/${id}`, { 
+          method: 'DELETE',
+          credentials: 'include'
+        });
         if (response.ok) {
           showToast('✓ Skill excluída com sucesso!', 'success');
           loadSkills();
@@ -114,23 +119,26 @@ export default function Admin() {
     const data = { 
       name: formData.get('name'), 
       gender: formData.get('gender'),
-      email: formData.get('email')
+      email: formData.get('email'),
+      is_admin: formData.get('is_admin') ? 1 : 0
     };
     
     try {
       let athleteId = editingAthlete?.id;
       
       if (athleteId) {
-        const response = await fetch(`/api/athletes/${athleteId}`, {
+        const response = await fetch(`http://localhost:3001/api/athletes/${athleteId}`, {
           method: 'PUT',
           headers: { 'Content-Type': 'application/json' },
+          credentials: 'include',
           body: JSON.stringify(data)
         });
         if (!response.ok) throw new Error();
       } else {
-        const response = await fetch('/api/athletes', {
+        const response = await fetch('http://localhost:3001/api/athletes', {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
+          credentials: 'include',
           body: JSON.stringify(data)
         });
         if (!response.ok) throw new Error();
@@ -142,8 +150,9 @@ export default function Admin() {
       if (photo && photo.size > 0 && athleteId) {
         const photoForm = new FormData();
         photoForm.append('photo', photo);
-        await fetch(`/api/athletes/${athleteId}/photo`, {
+        await fetch(`http://localhost:3001/api/athletes/${athleteId}/photo`, {
           method: 'POST',
+          credentials: 'include',
           body: photoForm
         });
       }
@@ -161,7 +170,10 @@ export default function Admin() {
   const deleteAthlete = async (id) => {
     if (confirm('Excluir atleta?')) {
       try {
-        const response = await fetch(`/api/athletes/${id}`, { method: 'DELETE' });
+        const response = await fetch(`http://localhost:3001/api/athletes/${id}`, { 
+          method: 'DELETE',
+          credentials: 'include'
+        });
         if (response.ok) {
           showToast('✓ Atleta excluído com sucesso!', 'success');
           loadAthletes();
@@ -187,11 +199,21 @@ export default function Admin() {
         }
       `}</style>
       <header style={{ background: 'rgba(0,0,0,0.9)', borderBottom: '2px solid #1e3a8a', padding: '20px', position: 'sticky', top: 0, zIndex: 100 }}>
-        <h1 style={{ textAlign: 'center', color: '#60a5fa', textShadow: '0 0 10px rgba(96,165,250,0.5)', marginBottom: '15px' }}>⚔ Admin - Valhalla Skills ⚔</h1>
+        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '15px' }}>
+          <h1 style={{ color: '#60a5fa', textShadow: '0 0 10px rgba(96,165,250,0.5)', margin: 0 }}>⚔ Admin - Valhalla Skills ⚔</h1>
+          <div style={{ display: 'flex', alignItems: 'center', gap: '15px' }}>
+            <span style={{ color: '#60a5fa', fontSize: '14px' }}>{user.email}</span>
+            <button onClick={() => {
+              fetch('http://localhost:3001/auth/logout', { method: 'POST', credentials: 'include' })
+                .then(() => window.location.href = '/login');
+            }} style={{ padding: '8px 16px', background: 'rgba(220,38,38,0.3)', border: '1px solid #dc2626', color: '#fca5a5', cursor: 'pointer', borderRadius: '8px', fontSize: '14px' }}>Sair</button>
+          </div>
+        </div>
         <nav style={{ display: 'flex', gap: '10px', justifyContent: 'center' }}>
           <button onClick={() => setView('skills')} style={{ padding: '10px 20px', background: view === 'skills' ? 'rgba(37,99,235,0.5)' : 'rgba(30,58,138,0.3)', border: '1px solid #2563eb', color: '#60a5fa', cursor: 'pointer', borderRadius: '8px' }}>Skills</button>
           <button onClick={() => setView('athletes')} style={{ padding: '10px 20px', background: view === 'athletes' ? 'rgba(37,99,235,0.5)' : 'rgba(30,58,138,0.3)', border: '1px solid #2563eb', color: '#60a5fa', cursor: 'pointer', borderRadius: '8px' }}>Atletas</button>
-          <a href="/" style={{ padding: '10px 20px', background: 'rgba(30,58,138,0.3)', border: '1px solid #2563eb', color: '#60a5fa', textDecoration: 'none', borderRadius: '8px' }}>Ver Árvore</a>
+          <a href="/tree" style={{ padding: '10px 20px', background: 'rgba(30,58,138,0.3)', border: '1px solid #2563eb', color: '#60a5fa', textDecoration: 'none', borderRadius: '8px' }}>Ver Árvore</a>
+          <a href="/" style={{ padding: '10px 20px', background: 'rgba(30,58,138,0.3)', border: '1px solid #2563eb', color: '#60a5fa', textDecoration: 'none', borderRadius: '8px' }}>🏆 Ranking</a>
         </nav>
       </header>
 
@@ -348,6 +370,12 @@ export default function Admin() {
                       <label style={{ display: 'block', color: '#60a5fa', marginBottom: '8px', fontWeight: 'bold' }}>Foto</label>
                       <input name="photo" type="file" accept="image/*" style={{ width: '100%', padding: '12px', background: 'rgba(0,0,0,0.5)', border: '2px solid #2563eb', borderRadius: '8px', color: '#fff', fontSize: '14px' }} />
                     </div>
+                    <div>
+                      <label style={{ display: 'flex', alignItems: 'center', gap: '10px', color: '#60a5fa', cursor: 'pointer' }}>
+                        <input name="is_admin" type="checkbox" defaultChecked={editingAthlete.is_admin === 1} style={{ width: '20px', height: '20px', cursor: 'pointer' }} />
+                        <span style={{ fontWeight: 'bold' }}>Permissão de Admin</span>
+                      </label>
+                    </div>
                   </div>
                   <div style={{ display: 'flex', gap: '15px', marginTop: '30px' }}>
                     <button type="submit" disabled={loading} style={{ flex: 1, padding: '15px', background: loading ? '#6b7280' : 'linear-gradient(135deg, #1e3a8a 0%, #2563eb 100%)', border: '2px solid #2563eb', color: '#fff', cursor: loading ? 'not-allowed' : 'pointer', borderRadius: '10px', fontSize: '16px', fontWeight: 'bold', opacity: loading ? 0.6 : 1 }}>{loading ? '⏳ Salvando...' : 'Salvar'}</button>
@@ -363,8 +391,11 @@ export default function Admin() {
                   <div style={{ display: 'flex', alignItems: 'center', gap: '10px', marginBottom: '10px' }}>
                     <img src={athlete.photo_path || (athlete.gender === 'M' ? '/viking.png' : '/valkyrie.png')} alt={athlete.name} style={{ width: '50px', height: '50px', borderRadius: '50%', objectFit: 'cover', border: '2px solid #2563eb' }} />
                     <div style={{ flex: 1, minWidth: 0 }}>
-                      <h3 style={{ color: '#60a5fa', fontSize: '14px', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>{athlete.name}</h3>
-                      <p style={{ color: '#93c5fd', fontSize: '11px' }}>{athlete.gender === 'M' ? '♂' : '♀'}</p>
+                      <div style={{ display: 'flex', alignItems: 'center', gap: '6px' }}>
+                        <h3 style={{ color: '#60a5fa', fontSize: '14px', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>{athlete.name}</h3>
+                        {athlete.is_admin === 1 && <span style={{ background: '#fbbf24', color: '#000', fontSize: '9px', padding: '2px 6px', borderRadius: '4px', fontWeight: 'bold' }}>ADMIN</span>}
+                      </div>
+                      <p style={{ color: '#93c5fd', fontSize: '11px' }}>{athlete.gender === 'M' ? '♂' : '♀'} {athlete.email && `• ${athlete.email}`}</p>
                     </div>
                   </div>
                   <div style={{ display: 'flex', gap: '6px', justifyContent: 'flex-end' }}>

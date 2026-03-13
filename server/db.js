@@ -28,7 +28,8 @@ db.exec(`
     name TEXT NOT NULL,
     gender TEXT NOT NULL,
     email TEXT,
-    photo_path TEXT
+    photo_path TEXT,
+    is_admin INTEGER DEFAULT 0
   );
 
   CREATE TABLE IF NOT EXISTS user_progress (

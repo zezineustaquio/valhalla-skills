@@ -1,19 +1,61 @@
+import 'dotenv/config';
 import express from 'express';
 import cors from 'cors';
+import session from 'express-session';
 import multer from 'multer';
 import { join, dirname } from 'path';
 import { fileURLToPath } from 'url';
 import db from './db.js';
+import passport from './auth.js';
 
 const __dirname = dirname(fileURLToPath(import.meta.url));
 const app = express();
 const upload = multer({ dest: 'server/uploads/' });
 
-app.use(cors());
+app.use(cors({ origin: 'http://localhost:3000', credentials: true }));
 app.use(express.json());
+app.use(session({
+  secret: process.env.SESSION_SECRET || 'valhalla_secret',
+  resave: false,
+  saveUninitialized: false,
+  cookie: { secure: false, maxAge: 24 * 60 * 60 * 1000 }
+}));
+app.use(passport.initialize());
+app.use(passport.session());
 app.use('/uploads', express.static(join(__dirname, 'uploads')));
 
-// Skills
+// Auth routes
+app.get('/auth/google', passport.authenticate('google', { scope: ['profile', 'email'] }));
+
+app.get('/auth/google/callback', 
+  passport.authenticate('google', { failureRedirect: '/' }),
+  (req, res) => res.redirect('http://localhost:3000')
+);
+
+app.get('/auth/user', (req, res) => {
+  if (req.isAuthenticated()) {
+    res.json(req.user);
+  } else {
+    res.status(401).json({ error: 'Not authenticated' });
+  }
+});
+
+app.post('/auth/logout', (req, res) => {
+  req.logout(() => res.json({ success: true }));
+});
+
+// Middleware de autenticação
+const requireAuth = (req, res, next) => {
+  if (req.isAuthenticated()) return next();
+  res.status(401).json({ error: 'Unauthorized' });
+};
+
+const requireAdmin = (req, res, next) => {
+  if (req.isAuthenticated() && req.user.isAdmin) return next();
+  res.status(403).json({ error: 'Forbidden' });
+};
+
+// Skills (público para leitura)
 app.get('/api/skills', (req, res) => {
   const skills = db.prepare(`
     SELECT s.*, GROUP_CONCAT(p.name, ';') as prereq
@@ -26,7 +68,7 @@ app.get('/api/skills', (req, res) => {
   res.json(skills);
 });
 
-app.post('/api/skills', (req, res) => {
+app.post('/api/skills', requireAdmin, (req, res) => {
   const { name, nivel, categoria, prereq, flyer, base, lateral, back } = req.body;
   
   const insertSkill = db.prepare(`
@@ -67,7 +109,7 @@ app.post('/api/skills', (req, res) => {
   }
 });
 
-app.put('/api/skills/:id', (req, res) => {
+app.put('/api/skills/:id', requireAdmin, (req, res) => {
   const { name, nivel, categoria, prereq, flyer, base, lateral, back } = req.body;
   const skillId = parseInt(req.params.id);
   
@@ -109,7 +151,7 @@ app.put('/api/skills/:id', (req, res) => {
   }
 });
 
-app.delete('/api/skills/:id', (req, res) => {
+app.delete('/api/skills/:id', requireAdmin, (req, res) => {
   try {
     // Verificar se outras skills dependem desta
     const dependentSkills = db.prepare(`
@@ -149,36 +191,47 @@ app.get('/api/athletes', (req, res) => {
   res.json(athletes);
 });
 
-app.post('/api/athletes', (req, res) => {
+app.post('/api/athletes', requireAdmin, (req, res) => {
   const { name, gender, email } = req.body;
   const result = db.prepare('INSERT INTO athletes (name, gender, email) VALUES (?, ?, ?)').run(name, gender, email);
   res.json({ id: result.lastInsertRowid });
 });
 
-app.put('/api/athletes/:id', (req, res) => {
-  const { name, gender, email } = req.body;
-  db.prepare('UPDATE athletes SET name=?, gender=?, email=? WHERE id=?').run(name, gender, email, req.params.id);
+app.put('/api/athletes/:id', requireAdmin, (req, res) => {
+  const { name, gender, email, is_admin } = req.body;
+  db.prepare('UPDATE athletes SET name=?, gender=?, email=?, is_admin=? WHERE id=?').run(name, gender, email, is_admin ? 1 : 0, req.params.id);
   res.json({ success: true });
 });
 
-app.delete('/api/athletes/:id', (req, res) => {
+app.patch('/api/athletes/:id/admin', requireAdmin, (req, res) => {
+  const { is_admin } = req.body;
+  db.prepare('UPDATE athletes SET is_admin=? WHERE id=?').run(is_admin ? 1 : 0, req.params.id);
+  res.json({ success: true });
+});
+
+app.delete('/api/athletes/:id', requireAdmin, (req, res) => {
   db.prepare('DELETE FROM athletes WHERE id=?').run(req.params.id);
   res.json({ success: true });
 });
 
-app.post('/api/athletes/:id/photo', upload.single('photo'), (req, res) => {
+app.post('/api/athletes/:id/photo', requireAdmin, upload.single('photo'), (req, res) => {
   const photoPath = `/uploads/${req.file.filename}`;
   db.prepare('UPDATE athletes SET photo_path=? WHERE id=?').run(photoPath, req.params.id);
   res.json({ photo_path: photoPath });
 });
 
 // Progress
+app.get('/api/progress', (req, res) => {
+  const progress = db.prepare('SELECT athlete_id, skill_id, rune_level FROM user_progress WHERE unlocked=1').all();
+  res.json(progress);
+});
+
 app.get('/api/progress/:athleteId', (req, res) => {
   const progress = db.prepare('SELECT skill_id, rune_level FROM user_progress WHERE athlete_id=? AND unlocked=1').all(req.params.athleteId);
   res.json(progress);
 });
 
-app.post('/api/progress', (req, res) => {
+app.post('/api/progress', requireAuth, (req, res) => {
   console.log('Received progress data:', req.body);
   const { athlete_id, skill_id, rune_level } = req.body;
   
