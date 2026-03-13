@@ -344,7 +344,7 @@ export default function SkillTree({ user }) {
               </div>
 
               <div style={{ display: 'flex', gap: '15px', justifyContent: 'center', flexWrap: 'nowrap' }}>
-                {Object.keys(levels[nivelStr]).map(categoria => (
+                {Object.keys(levels[nivelStr]).sort().map(categoria => (
                   <div key={categoria} style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '10px', padding: '10px', background: 'rgba(30,58,138,0.1)', borderRadius: '15px', border: '1px solid rgba(37,99,235,0.3)', minWidth: '100px', flexShrink: 0 }}>
                     <div style={{ fontSize: '11px', letterSpacing: '2px', fontWeight: 'bold', color: '#60a5fa', padding: '5px 10px', background: 'rgba(0,0,0,0.8)', borderRadius: '10px', border: '1px solid #2563eb' }}>{categoria}</div>
                     <div style={{ display: 'flex', gap: '10px', flexWrap: 'wrap', justifyContent: 'center' }}>
