@@ -20,6 +20,7 @@ npm-debug.log*
 # Environment
 .env
 .env.local
+.env.production
 
 # IDE
 .vscode/

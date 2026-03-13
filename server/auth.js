@@ -18,7 +18,7 @@ passport.deserializeUser((email, done) => {
 passport.use(new GoogleStrategy({
   clientID: process.env.GOOGLE_CLIENT_ID,
   clientSecret: process.env.GOOGLE_CLIENT_SECRET,
-  callbackURL: '/auth/google/callback'
+  callbackURL: `${process.env.VITE_API_URL || 'http://localhost:3001'}/auth/google/callback`
 }, (accessToken, refreshToken, profile, done) => {
   const email = profile.emails[0].value;
   const athlete = db.prepare('SELECT * FROM athletes WHERE email = ?').get(email);

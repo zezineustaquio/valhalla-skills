@@ -12,7 +12,7 @@ const __dirname = dirname(fileURLToPath(import.meta.url));
 const app = express();
 const upload = multer({ dest: 'server/uploads/' });
 
-app.use(cors({ origin: 'http://localhost:3000', credentials: true }));
+app.use(cors({ origin: process.env.VITE_CLIENT_URL || 'http://localhost:3000', credentials: true }));
 app.use(express.json());
 app.use(session({
   secret: process.env.SESSION_SECRET || 'valhalla_secret',
@@ -24,12 +24,15 @@ app.use(passport.initialize());
 app.use(passport.session());
 app.use('/uploads', express.static(join(__dirname, 'uploads')));
 
+// Serve static files from dist directory
+app.use(express.static(join(__dirname, '..', 'dist')));
+
 // Auth routes
 app.get('/auth/google', passport.authenticate('google', { scope: ['profile', 'email'] }));
 
 app.get('/auth/google/callback', 
   passport.authenticate('google', { failureRedirect: '/' }),
-  (req, res) => res.redirect('http://localhost:3000')
+  (req, res) => res.redirect(process.env.VITE_CLIENT_URL || 'http://localhost:3000')
 );
 
 app.get('/auth/user', (req, res) => {
@@ -249,5 +252,10 @@ app.post('/api/progress', requireAuth, (req, res) => {
   }
 });
 
-const PORT = 3001;
+// Serve React app for all other routes
+app.get('*', (req, res) => {
+  res.sendFile(join(__dirname, '..', 'dist', 'index.html'));
+});
+
+const PORT = process.env.PORT || 3001;
 app.listen(PORT, () => console.log(`🚀 Server running on http://localhost:${PORT}`));

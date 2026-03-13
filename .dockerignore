@@ -1,0 +1,7 @@
+node_modules
+.git
+*.log
+dist
+valhalla.db
+server/uploads/*
+!server/uploads/.gitkeep

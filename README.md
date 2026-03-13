@@ -12,8 +12,8 @@ Aplicação moderna de gamificação para progressão de habilidades de cheerlea
 
 ## Requisitos
 
-- **Node.js**: >= 18.0.0
-- **npm**: >= 8.0.0
+- **Node.js**: >= 24.14.0
+- **npm**: >= 11.9.0
 - **Conta Google Cloud** (para OAuth)
 
 Se você usa NVM:
@@ -41,14 +41,23 @@ ADMIN_EMAIL=zezineustaquio@gmail.com
 
 ## Executar
 
+### Desenvolvimento
 ```bash
 npm run dev
 ```
 
+### Docker
+```bash
+# Build e executar
+docker-compose up --build
+
+# Ou usando Docker diretamente
+docker build -t valhalla-gamify .
+docker run -p 3001:3001 --env-file .env valhalla-gamify
+```
+
 Acesse:
-- **Login**: http://localhost:3000/login
-- **Árvore de Skills**: http://localhost:3000
-- **Admin**: http://localhost:3000/admin (apenas para admin)
+- **Aplicação**: http://localhost:3001
 - **API**: http://localhost:3001/api
 
 ## Autenticação e Permissões

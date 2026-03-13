@@ -1,5 +1,6 @@
 import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
+import { API_URL } from '../config';
 
 export default function Ranking({ user }) {
   const [rankings, setRankings] = useState([]);
@@ -11,8 +12,8 @@ export default function Ranking({ user }) {
 
   const loadRankings = async () => {
     const [athletesRes, progressRes] = await Promise.all([
-      fetch('http://localhost:3001/api/athletes', { credentials: 'include' }),
-      fetch('http://localhost:3001/api/progress', { credentials: 'include' })
+      fetch(`${API_URL}/api/athletes`, { credentials: 'include' }),
+      fetch(`${API_URL}/api/progress`, { credentials: 'include' })
     ]);
     
     const athletes = await athletesRes.json();
@@ -61,12 +62,12 @@ export default function Ranking({ user }) {
             <a href="/tree" style={{ padding: '12px 20px', background: 'rgba(30,58,138,0.9)', border: '2px solid #2563eb', color: '#60a5fa', textDecoration: 'none', borderRadius: '50px', fontSize: '14px', fontWeight: 'bold', textAlign: 'center', animation: 'pulse 2s ease-in-out infinite', backdropFilter: 'blur(10px)' }}>🌳 Árvore</a>
             {user.isAdmin && <a href="/admin" style={{ padding: '12px 20px', background: 'rgba(30,58,138,0.9)', border: '2px solid #2563eb', color: '#60a5fa', textDecoration: 'none', borderRadius: '50px', fontSize: '14px', fontWeight: 'bold', textAlign: 'center', animation: 'pulse 2s ease-in-out infinite', backdropFilter: 'blur(10px)' }}>⚙️ Admin</a>}
             <button onClick={() => {
-              fetch('http://localhost:3001/auth/logout', { method: 'POST', credentials: 'include' })
+              fetch(`${API_URL}/auth/logout`, { method: 'POST', credentials: 'include' })
                 .then(() => window.location.reload());
             }} style={{ padding: '12px 20px', background: 'rgba(220,38,38,0.9)', border: '2px solid #dc2626', color: '#fca5a5', cursor: 'pointer', borderRadius: '50px', fontSize: '14px', fontWeight: 'bold', animation: 'pulse 2s ease-in-out infinite', backdropFilter: 'blur(10px)' }}>🚪 Sair</button>
           </>
         ) : (
-          <a href="http://localhost:3001/auth/google" style={{ padding: '12px 20px', background: '#fff', color: '#1e3a8a', textDecoration: 'none', borderRadius: '50px', fontSize: '14px', fontWeight: 'bold', display: 'flex', alignItems: 'center', gap: '8px', animation: 'pulse 2s ease-in-out infinite', boxShadow: '0 0 20px rgba(255,255,255,0.5)' }}>
+          <a href={`${API_URL}/auth/google`} style={{ padding: '12px 20px', background: '#fff', color: '#1e3a8a', textDecoration: 'none', borderRadius: '50px', fontSize: '14px', fontWeight: 'bold', display: 'flex', alignItems: 'center', gap: '8px', animation: 'pulse 2s ease-in-out infinite', boxShadow: '0 0 20px rgba(255,255,255,0.5)' }}>
             <svg width="18" height="18" viewBox="0 0 24 24">
               <path fill="#4285F4" d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z"/>
               <path fill="#34A853" d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z"/>

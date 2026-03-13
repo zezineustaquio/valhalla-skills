@@ -3,13 +3,14 @@ import { useState, useEffect } from 'react';
 import SkillTree from './components/SkillTree';
 import Admin from './components/Admin';
 import Ranking from './components/Ranking';
+import { API_URL } from './config';
 
 export default function App() {
   const [user, setUser] = useState(null);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    fetch('http://localhost:3001/auth/user', { credentials: 'include' })
+    fetch(`${API_URL}/auth/user`, { credentials: 'include' })
       .then(res => res.ok ? res.json() : null)
       .then(data => setUser(data))
       .finally(() => setLoading(false));

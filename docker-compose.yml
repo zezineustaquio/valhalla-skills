@@ -1,0 +1,21 @@
+version: '3.8'
+
+services:
+  valhalla-gamify:
+    build: 
+      context: .
+      args:
+        - VITE_API_URL=${VITE_API_URL}
+        - VITE_CLIENT_URL=${VITE_CLIENT_URL}
+    ports:
+      - "3001:3001"
+    environment:
+      - GOOGLE_CLIENT_ID=${GOOGLE_CLIENT_ID}
+      - GOOGLE_CLIENT_SECRET=${GOOGLE_CLIENT_SECRET}
+      - SESSION_SECRET=${SESSION_SECRET}
+      - ADMIN_EMAIL=${ADMIN_EMAIL}
+      - PORT=3001
+    volumes:
+      - ./server/uploads:/app/server/uploads
+      - ./valhalla.db:/app/valhalla.db
+    restart: unless-stopped

@@ -1,4 +1,5 @@
 import { useState, useEffect } from 'react';
+import { API_URL } from '../config';
 
 export default function Admin({ user }) {
   const [skills, setSkills] = useState([]);
@@ -16,12 +17,12 @@ export default function Admin({ user }) {
   }, []);
 
   const loadSkills = async () => {
-    const res = await fetch('http://localhost:3001/api/skills', { credentials: 'include' });
+    const res = await fetch(`${API_URL}/api/skills`, { credentials: 'include' });
     setSkills(await res.json());
   };
 
   const loadAthletes = async () => {
-    const res = await fetch('http://localhost:3001/api/athletes', { credentials: 'include' });
+    const res = await fetch(`${API_URL}/api/athletes`, { credentials: 'include' });
     setAthletes(await res.json());
   };
 
@@ -35,14 +36,14 @@ export default function Admin({ user }) {
     try {
       let response;
       if (editingSkill.id) {
-        response = await fetch(`http://localhost:3001/api/skills/${editingSkill.id}`, {
+        response = await fetch(`${API_URL}/api/skills/${editingSkill.id}`, {
           method: 'PUT',
           headers: { 'Content-Type': 'application/json' },
           credentials: 'include',
           body: JSON.stringify(data)
         });
       } else {
-        response = await fetch('http://localhost:3001/api/skills', {
+        response = await fetch(`${API_URL}/api/skills`, {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
           credentials: 'include',
@@ -95,7 +96,7 @@ export default function Admin({ user }) {
   const deleteSkill = async (id) => {
     if (confirm('Excluir skill?')) {
       try {
-        const response = await fetch(`http://localhost:3001/api/skills/${id}`, { 
+        const response = await fetch(`${API_URL}/api/skills/${id}`, { 
           method: 'DELETE',
           credentials: 'include'
         });
@@ -127,7 +128,7 @@ export default function Admin({ user }) {
       let athleteId = editingAthlete?.id;
       
       if (athleteId) {
-        const response = await fetch(`http://localhost:3001/api/athletes/${athleteId}`, {
+        const response = await fetch(`${API_URL}/api/athletes/${athleteId}`, {
           method: 'PUT',
           headers: { 'Content-Type': 'application/json' },
           credentials: 'include',
@@ -135,7 +136,7 @@ export default function Admin({ user }) {
         });
         if (!response.ok) throw new Error();
       } else {
-        const response = await fetch('http://localhost:3001/api/athletes', {
+        const response = await fetch(`${API_URL}/api/athletes`, {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
           credentials: 'include',
@@ -150,7 +151,7 @@ export default function Admin({ user }) {
       if (photo && photo.size > 0 && athleteId) {
         const photoForm = new FormData();
         photoForm.append('photo', photo);
-        await fetch(`http://localhost:3001/api/athletes/${athleteId}/photo`, {
+        await fetch(`${API_URL}/api/athletes/${athleteId}/photo`, {
           method: 'POST',
           credentials: 'include',
           body: photoForm
@@ -170,7 +171,7 @@ export default function Admin({ user }) {
   const deleteAthlete = async (id) => {
     if (confirm('Excluir atleta?')) {
       try {
-        const response = await fetch(`http://localhost:3001/api/athletes/${id}`, { 
+        const response = await fetch(`${API_URL}/api/athletes/${id}`, { 
           method: 'DELETE',
           credentials: 'include'
         });
@@ -204,7 +205,7 @@ export default function Admin({ user }) {
           <div style={{ display: 'flex', alignItems: 'center', gap: '15px' }}>
             <span style={{ color: '#60a5fa', fontSize: '14px' }}>{user.email}</span>
             <button onClick={() => {
-              fetch('http://localhost:3001/auth/logout', { method: 'POST', credentials: 'include' })
+              fetch(`${API_URL}/auth/logout`, { method: 'POST', credentials: 'include' })
                 .then(() => window.location.href = '/login');
             }} style={{ padding: '8px 16px', background: 'rgba(220,38,38,0.3)', border: '1px solid #dc2626', color: '#fca5a5', cursor: 'pointer', borderRadius: '8px', fontSize: '14px' }}>Sair</button>
           </div>
